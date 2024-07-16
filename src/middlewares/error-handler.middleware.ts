@@ -1,6 +1,18 @@
-import {NextFunction, Request, Response} from "express";
+import { NextFunction, Request, Response } from "express";
 
-export function errorHandlerMiddleware(err: Error, req: Request, res: Response, next: NextFunction) {
-    console.error(err.stack);
-    res.status(500).json({ error: 'Internal Server Error' });
+export function errorHandlerMiddleware(
+  err: any,
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) {
+  console.error(err.stack);
+
+  const statusCode = err?.statusCode || 500;
+  const message = err?.message || "Internal server error"
+
+  res.status(statusCode).json({
+    statusCode,
+    message,
+  });
 }
