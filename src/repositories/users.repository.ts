@@ -1,9 +1,9 @@
 import { IUsersRepository, UserCreateInput } from "@/types/users.types";
-import { PrismaClient } from "@prisma/client";
+import { prismaClient } from "@/database";
 
 export class UsersRepository implements IUsersRepository {
-  private db: PrismaClient;
-  constructor(db: PrismaClient) {
+  private db: typeof prismaClient;
+  constructor(db: typeof prismaClient) {
     this.db = db;
   }
 

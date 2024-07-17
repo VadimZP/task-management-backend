@@ -1,6 +1,9 @@
+import bcrypt from "bcrypt";
 import { IUsersService, UserCreateInput } from "@/types/users.types";
 import { CustomError } from "@/utils";
 import { UsersRepository } from "@/repositories/users.repository";
+// import { ZodError } from "zod";
+// import { BadRequestError } from "@utils/custom-error-handler";
 
 export class UsersService implements IUsersService {
   private repository: UsersRepository;
@@ -21,15 +24,26 @@ export class UsersService implements IUsersService {
         throw new CustomError("User with this email already exists", 409);
       }
 
-      result = await this.repository.create(data);
+      const saltRounds = 10;
+      const password = data.password;
+
+      const hash = await bcrypt.hash(password, saltRounds);
+
+      result = await this.repository.create({
+        email: data.email,
+        nickname: data.nickname,
+        password: hash,
+      });
     } catch (e) {
+      // if (e instanceof ZodError) {
+      //   throw new BadRequestError(e.issues);
+      // }
       if (e instanceof CustomError) {
-        console.log("KEK")
         throw new CustomError(e.message, e.statusCode);
       } else if (e instanceof Error) {
         throw new Error(`signUp failed: ${e.message}`);
       } else {
-        throw new Error('signUp failed due to an unknown error');
+        throw new Error("signUp failed due to an unknown error");
       }
     }
 

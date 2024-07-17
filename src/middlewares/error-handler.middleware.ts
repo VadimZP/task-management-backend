@@ -9,10 +9,12 @@ export function errorHandlerMiddleware(
   console.error(err.stack);
 
   const statusCode = err?.statusCode || 500;
-  const message = err?.message || "Internal server error"
+  const message = err?.message || "Internal server error";
+  // const issues = err?.issues;
 
   res.status(statusCode).json({
     statusCode,
     message,
+    // ...(issues ? { issues } : {})
   });
 }
