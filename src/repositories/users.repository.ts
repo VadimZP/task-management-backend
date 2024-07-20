@@ -41,9 +41,8 @@ export class UsersRepository implements IUsersRepository {
         email: data.email,
       },
       data: {
-        emailVerificationCode: null,
-        emailVerificationCodeCreatedAt: null,
-        isActive: true
+        emailVerificationCode: data.emailVerificationCode,
+        emailVerificationCodeCreatedAt: data.emailVerificationCodeCreatedAt,
       },
     })
   }

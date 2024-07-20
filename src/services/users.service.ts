@@ -177,5 +177,15 @@ export class UsersService implements IUsersService {
       text: "Confirm your email with this code",
       html: `<b>Verification code: ${emailVerificationCode}</b>`,
     });
+
+    const currentDateISO = dayjs().toISOString()
+
+    await this.repository.resetEmailVerificationCode({
+      email: data.email,
+      emailVerificationCode,
+      emailVerificationCodeCreatedAt: currentDateISO
+    })
+
+    return null;
   }
 }

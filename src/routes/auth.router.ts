@@ -1,4 +1,5 @@
 import express, { Request, Response } from "express";
+
 import { UsersService } from "@/services/users.service";
 import { UsersRepository } from "@/repositories/users.repository";
 import { prismaClient } from "@/database";
@@ -8,6 +9,7 @@ import {
   SignUpSchema,
   EmailVerificationRequest,
   EmailVerificationSchema,
+  ResetEmailVerificationCodeSchema,
 } from "@/types/users.types";
 import { validate } from "@/middlewares";
 
@@ -62,24 +64,23 @@ authRouter.patch(
 );
 
 authRouter.patch(
-  ROUTES.EMAIL_VERIFICATION,
-  validate(EmailVerificationSchema),
+  ROUTES.RESET_EMAIL_VERIFICATION,
+  validate(ResetEmailVerificationCodeSchema),
   async (
     req: Request<{}, {}, EmailVerificationRequest>,
     res: Response,
     next,
   ) => {
     try {
-      const result = await usersService.verifyEmail({
+      const result = await usersService.resetEmailVerificationCode({
         email: req.body.email,
         nickname: req.body.nickname,
         password: req.body.password,
-        emailVerificationCode: req.body.emailVerificationCode,
       });
 
       res
         .status(201)
-        .json({ data: result, message: "User successfully verified email" });
+        .json({ data: result, message: "New verification code sent to your email" });
     } catch (e) {
       next(e);
     }
