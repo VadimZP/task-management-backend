@@ -1,15 +1,42 @@
 import { Prisma } from "@prisma/client";
 import { z } from "zod";
 
-export type UserCreateInput = Omit<Prisma.UserCreateInput, "createdAt">;
+export type UserCreateInputRequest = Pick<
+  Prisma.UserCreateInput,
+  "email" | "nickname" | "password"
+>;
+export type UserCreateInputRepository = Omit<
+  Prisma.UserCreateInput,
+  "createdAt" | "emailVerificationCodeCreatedAt"
+>;
+export type UserFindByEmailAndNicknameRepository = Pick<
+  Prisma.UserCreateInput,
+  "email" | "nickname"
+>;
+
+export type EmailVerificationRequest = Omit<
+  Prisma.UserCreateInput,
+  "createdAt" | "emailVerificationCodeCreatedAt" | "isActive"
+>;
+export type EmailVerificationRepository = {
+  email: Prisma.UserCreateInput["email"];
+};
+
+export type ResetEmailVerificationCodeRequest = Omit<
+  Prisma.UserCreateInput,
+  "createdAt" | "emailVerificationCodeCreatedAt" | "isActive"
+>;
+export type ResetEmailVerificationCodeRepository = Pick<Prisma.UserCreateInput, "email" | "emailVerificationCodeCreatedAt">;
 
 export interface IUsersRepository {
-  create: (data: UserCreateInput) => void;
-  findByEmail: (data: { email: string }) => void;
+  create: (data: UserCreateInputRepository) => void;
+  findByEmailAndNickname: (data: UserFindByEmailAndNicknameRepository) => void;
+  verifyEmail: (data: EmailVerificationRepository) => void;
 }
 
 export interface IUsersService {
-  signUp: (data: UserCreateInput) => void;
+  signUp: (data: UserCreateInputRequest) => void;
+  verifyEmail: (data: EmailVerificationRequest) => void;
 }
 
 export const SignUpSchema = z.object({
@@ -24,5 +51,14 @@ export const SignUpSchema = z.object({
         new RegExp(/^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z]).*$/),
         "Password should contain at least one number, at least one lowercase letter, at least one uppercase letter",
       ),
+  }),
+});
+
+export const EmailVerificationSchema = z.object({
+  body: z.object({
+    email: z.string().email(),
+    nickname: z.string(),
+    password: z.string(),
+    emailVerificationCode: z.string(),
   }),
 });

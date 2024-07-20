@@ -1,4 +1,4 @@
-import { IUsersRepository, UserCreateInput } from "@/types/users.types";
+import { EmailVerificationRepository, IUsersRepository, ResetEmailVerificationCodeRepository, UserCreateInputRepository } from "@/types/users.types";
 import { prismaClient } from "@/database";
 
 export class UsersRepository implements IUsersRepository {
@@ -7,15 +7,44 @@ export class UsersRepository implements IUsersRepository {
     this.db = db;
   }
 
-  async create(data: UserCreateInput) {
+  async create(data: UserCreateInputRepository) {
     return this.db.user.create({ data });
   }
 
-  async findByEmail(data: { email: string }) {
-    return this.db.user.findUnique({
+  async findByEmailAndNickname(data: { email: string, nickname: string }) {
+    return this.db.user.findFirst({
+      where: {
+        OR: [
+          { email: data.email },
+          { nickname: data.nickname }
+        ]
+      }
+    })
+  }
+
+  async verifyEmail(data: EmailVerificationRepository) {
+    return await this.db.user.update({
       where: {
         email: data.email,
       },
-    });
+      data: {
+        emailVerificationCode: null,
+        emailVerificationCodeCreatedAt: null,
+        isActive: true
+      },
+    })
+  }
+
+  async resetEmailVerificationCode(data: ResetEmailVerificationCodeRepository) {
+    return await this.db.user.update({
+      where: {
+        email: data.email,
+      },
+      data: {
+        emailVerificationCode: null,
+        emailVerificationCodeCreatedAt: null,
+        isActive: true
+      },
+    })
   }
 }
