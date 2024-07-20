@@ -80,7 +80,10 @@ authRouter.patch(
 
       res
         .status(201)
-        .json({ data: result, message: "New verification code sent to your email" });
+        .json({
+          data: result,
+          message: "New verification code sent to your email",
+        });
     } catch (e) {
       next(e);
     }

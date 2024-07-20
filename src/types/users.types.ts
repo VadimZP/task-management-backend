@@ -26,13 +26,18 @@ export type ResetEmailVerificationCodeRequest = Omit<
   Prisma.UserCreateInput,
   "createdAt" | "emailVerificationCodeCreatedAt" | "isActive"
 >;
-export type ResetEmailVerificationCodeRepository = Pick<Prisma.UserCreateInput, "email" | "emailVerificationCode" | "emailVerificationCodeCreatedAt">;
+export type ResetEmailVerificationCodeRepository = Pick<
+  Prisma.UserCreateInput,
+  "email" | "emailVerificationCode" | "emailVerificationCodeCreatedAt"
+>;
 
 export interface IUsersRepository {
   create: (data: UserCreateInputRepository) => void;
   findByEmailAndNickname: (data: UserFindByEmailAndNicknameRepository) => void;
   verifyEmail: (data: EmailVerificationRepository) => void;
-  resetEmailVerificationCode: (data: ResetEmailVerificationCodeRepository) => void;
+  resetEmailVerificationCode: (
+    data: ResetEmailVerificationCodeRepository,
+  ) => void;
 }
 
 export interface IUsersService {
@@ -72,4 +77,3 @@ export const ResetEmailVerificationCodeSchema = z.object({
     password: z.string(),
   }),
 });
-

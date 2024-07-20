@@ -1,4 +1,9 @@
-import { EmailVerificationRepository, IUsersRepository, ResetEmailVerificationCodeRepository, UserCreateInputRepository } from "@/types/users.types";
+import {
+  EmailVerificationRepository,
+  IUsersRepository,
+  ResetEmailVerificationCodeRepository,
+  UserCreateInputRepository,
+} from "@/types/users.types";
 import { prismaClient } from "@/database";
 
 export class UsersRepository implements IUsersRepository {
@@ -11,15 +16,12 @@ export class UsersRepository implements IUsersRepository {
     return this.db.user.create({ data });
   }
 
-  async findByEmailAndNickname(data: { email: string, nickname: string }) {
+  async findByEmailAndNickname(data: { email: string; nickname: string }) {
     return this.db.user.findFirst({
       where: {
-        OR: [
-          { email: data.email },
-          { nickname: data.nickname }
-        ]
-      }
-    })
+        OR: [{ email: data.email }, { nickname: data.nickname }],
+      },
+    });
   }
 
   async verifyEmail(data: EmailVerificationRepository) {
@@ -30,9 +32,9 @@ export class UsersRepository implements IUsersRepository {
       data: {
         emailVerificationCode: null,
         emailVerificationCodeCreatedAt: null,
-        isActive: true
+        isActive: true,
       },
-    })
+    });
   }
 
   async resetEmailVerificationCode(data: ResetEmailVerificationCodeRepository) {
@@ -44,6 +46,6 @@ export class UsersRepository implements IUsersRepository {
         emailVerificationCode: data.emailVerificationCode,
         emailVerificationCodeCreatedAt: data.emailVerificationCodeCreatedAt,
       },
-    })
+    });
   }
 }

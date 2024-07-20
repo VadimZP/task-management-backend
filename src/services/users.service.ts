@@ -12,7 +12,6 @@ import {
 import { CustomError, handleError } from "@/utils";
 import { UsersRepository } from "@/repositories/users.repository";
 
-
 export class UsersService implements IUsersService {
   private repository: UsersRepository;
 
@@ -100,7 +99,7 @@ export class UsersService implements IUsersService {
       }
 
       if (foundUser.isActive) {
-        throw new CustomError("User is already verified", 400)
+        throw new CustomError("User is already verified", 400);
       }
 
       const isEmailVerificationCodeMatch =
@@ -112,18 +111,25 @@ export class UsersService implements IUsersService {
 
       if (!foundUser?.emailVerificationCodeCreatedAt) {
         throw new Error("Something went wrong with verification code");
-      };
-
-      const dateOfEmailVerificationCodeCreation = dayjs(foundUser!.emailVerificationCodeCreatedAt.toISOString());
-      const currentDate = dayjs();
-      const diffInMinutes = currentDate.diff(dateOfEmailVerificationCodeCreation, 'minute');
-      const isEmailVerificationCodeExpired = diffInMinutes >= 1
-
-      if (isEmailVerificationCodeExpired) {
-        throw new CustomError('Email verification code has expired', 410);
       }
 
-      const { email, nickname } = await this.repository.verifyEmail({ email: data.email })
+      const dateOfEmailVerificationCodeCreation = dayjs(
+        foundUser!.emailVerificationCodeCreatedAt.toISOString(),
+      );
+      const currentDate = dayjs();
+      const diffInMinutes = currentDate.diff(
+        dateOfEmailVerificationCodeCreation,
+        "minute",
+      );
+      const isEmailVerificationCodeExpired = diffInMinutes >= 1;
+
+      if (isEmailVerificationCodeExpired) {
+        throw new CustomError("Email verification code has expired", 410);
+      }
+
+      const { email, nickname } = await this.repository.verifyEmail({
+        email: data.email,
+      });
 
       return { email, nickname };
     } catch (e) {
@@ -154,7 +160,7 @@ export class UsersService implements IUsersService {
     }
 
     if (foundUser.isActive) {
-      throw new CustomError("User is already verified", 400)
+      throw new CustomError("User is already verified", 400);
     }
 
     const emailVerificationCode = crypto.randomBytes(3).toString("hex");
@@ -178,13 +184,13 @@ export class UsersService implements IUsersService {
       html: `<b>Verification code: ${emailVerificationCode}</b>`,
     });
 
-    const currentDateISO = dayjs().toISOString()
+    const currentDateISO = dayjs().toISOString();
 
     await this.repository.resetEmailVerificationCode({
       email: data.email,
       emailVerificationCode,
-      emailVerificationCodeCreatedAt: currentDateISO
-    })
+      emailVerificationCodeCreatedAt: currentDateISO,
+    });
 
     return null;
   }
