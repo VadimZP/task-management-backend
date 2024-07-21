@@ -31,6 +31,16 @@ export type ResetEmailVerificationCodeRepository = Pick<
   "email" | "emailVerificationCode" | "emailVerificationCodeCreatedAt"
 >;
 
+export type SignInRequest = Pick<
+  Prisma.UserCreateInput,
+  "email" | "password"
+>;
+
+export type SignInRepository = Pick<
+  Prisma.UserCreateInput,
+  "email"
+>;
+
 export interface IUsersRepository {
   create: (data: UserCreateInputRepository) => void;
   findByEmailAndNickname: (data: UserFindByEmailAndNicknameRepository) => void;
@@ -38,12 +48,14 @@ export interface IUsersRepository {
   resetEmailVerificationCode: (
     data: ResetEmailVerificationCodeRepository,
   ) => void;
+  signIn: (data: SignInRepository) => void;
 }
 
 export interface IUsersService {
   signUp: (data: UserCreateInputRequest) => void;
   verifyEmail: (data: EmailVerificationRequest) => void;
   resetEmailVerificationCode: (data: ResetEmailVerificationCodeRequest) => void;
+  signIn: (data: SignInRequest) => void;
 }
 
 export const SignUpSchema = z.object({
@@ -74,6 +86,13 @@ export const ResetEmailVerificationCodeSchema = z.object({
   body: z.object({
     email: z.string().email(),
     nickname: z.string(),
+    password: z.string(),
+  }),
+});
+
+export const SignInSchema = z.object({
+  body: z.object({
+    email: z.string().email(),
     password: z.string(),
   }),
 });

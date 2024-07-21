@@ -1,6 +1,6 @@
 import express, { Request, Response } from "express";
 
-import { UsersService } from "@/services/users.service";
+import { UsersService } from "@/services/auth.service";
 import { UsersRepository } from "@/repositories/users.repository";
 import { prismaClient } from "@/database";
 import { ROUTES } from "@/utils/constants";
@@ -10,6 +10,8 @@ import {
   EmailVerificationRequest,
   EmailVerificationSchema,
   ResetEmailVerificationCodeSchema,
+  SignInSchema,
+  SignInRequest,
 } from "@/types/users.types";
 import { validate } from "@/middlewares";
 
@@ -83,6 +85,35 @@ authRouter.patch(
         .json({
           data: result,
           message: "New verification code sent to your email",
+        });
+    } catch (e) {
+      next(e);
+    }
+  },
+);
+
+authRouter.post(
+  ROUTES.SIGN_IN,
+  validate(SignInSchema),
+  async (
+    req: Request<{}, {}, SignInRequest>,
+    res: Response,
+    next,
+  ) => {
+    try {
+      const result = await usersService.signIn({
+        email: req.body.email,
+        password: req.body.password,
+      });
+
+      // @ts-ignore
+      req.session.user = { email: result.email, nickname: result.nickname }
+
+      res
+        .status(201)
+        .json({
+          data: result,
+          message: "Successfully signed in",
         });
     } catch (e) {
       next(e);

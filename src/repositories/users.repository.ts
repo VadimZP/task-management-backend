@@ -2,6 +2,7 @@ import {
   EmailVerificationRepository,
   IUsersRepository,
   ResetEmailVerificationCodeRepository,
+  SignInRepository,
   UserCreateInputRepository,
 } from "@/types/users.types";
 import { prismaClient } from "@/database";
@@ -45,6 +46,15 @@ export class UsersRepository implements IUsersRepository {
       data: {
         emailVerificationCode: data.emailVerificationCode,
         emailVerificationCodeCreatedAt: data.emailVerificationCodeCreatedAt,
+      },
+    });
+  }
+
+
+  async signIn(data: SignInRepository) {
+    return await this.db.user.findUnique({
+      where: {
+        email: data.email,
       },
     });
   }

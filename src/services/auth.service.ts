@@ -7,6 +7,7 @@ import {
   EmailVerificationRequest,
   IUsersService,
   ResetEmailVerificationCodeRequest,
+  SignInRequest,
   UserCreateInputRequest,
 } from "@/types/users.types";
 import { CustomError, handleError } from "@/utils";
@@ -193,5 +194,32 @@ export class UsersService implements IUsersService {
     });
 
     return null;
+  }
+
+  async signIn(data: SignInRequest) {
+    const foundUser = await this.repository.signIn({
+      email: data.email,
+    });
+
+    if (
+      foundUser?.email !== data.email
+    ) {
+      throw new CustomError("Incorrect credentials provided", 401);
+    }
+
+    const isPasswordMatch = await bcrypt.compare(
+      data.password,
+      foundUser!.password,
+    );
+
+    if (!isPasswordMatch) {
+      throw new CustomError("Incorrect credentials provided", 401);
+    }
+
+    if (!foundUser.isActive) {
+      throw new CustomError("User is not verified", 400);
+    }
+
+    return foundUser;
   }
 }
