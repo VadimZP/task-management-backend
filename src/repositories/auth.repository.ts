@@ -4,16 +4,15 @@ import {
   ResetEmailVerificationCodeRepository,
   SignInRepository,
   UserCreateInputRepository,
-} from "@/types/users.types";
+} from "@/types/auth.types";
 import { prismaClient } from "@/database";
 
 export class UsersRepository implements IUsersRepository {
-  private db: typeof prismaClient;
-  constructor(db: typeof prismaClient) {
+  constructor(private db: typeof prismaClient) {
     this.db = db;
   }
 
-  async create(data: UserCreateInputRepository) {
+  async signUp(data: UserCreateInputRepository) {
     return this.db.user.create({ data });
   }
 
@@ -49,7 +48,6 @@ export class UsersRepository implements IUsersRepository {
       },
     });
   }
-
 
   async signIn(data: SignInRepository) {
     return await this.db.user.findUnique({

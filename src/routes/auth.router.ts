@@ -1,7 +1,7 @@
 import express, { Request, Response } from "express";
 
 import { UsersService } from "@/services/auth.service";
-import { UsersRepository } from "@/repositories/users.repository";
+import { UsersRepository } from "@/repositories/auth.repository";
 import { prismaClient } from "@/database";
 import { ROUTES } from "@/utils/constants";
 import {
@@ -12,7 +12,7 @@ import {
   ResetEmailVerificationCodeSchema,
   SignInSchema,
   SignInRequest,
-} from "@/types/users.types";
+} from "@/types/auth.types";
 import { validate } from "@/middlewares";
 
 export const authRouter = express.Router();
@@ -80,12 +80,10 @@ authRouter.patch(
         password: req.body.password,
       });
 
-      res
-        .status(201)
-        .json({
-          data: result,
-          message: "New verification code sent to your email",
-        });
+      res.status(201).json({
+        data: result,
+        message: "New verification code sent to your email",
+      });
     } catch (e) {
       next(e);
     }
@@ -95,26 +93,41 @@ authRouter.patch(
 authRouter.post(
   ROUTES.SIGN_IN,
   validate(SignInSchema),
-  async (
-    req: Request<{}, {}, SignInRequest>,
-    res: Response,
-    next,
-  ) => {
+  async (req: Request<{}, {}, SignInRequest>, res: Response, next) => {
     try {
       const result = await usersService.signIn({
         email: req.body.email,
         password: req.body.password,
       });
 
-      // @ts-ignore
-      req.session.user = { email: result.email, nickname: result.nickname }
+      const session = req.session;
 
-      res
-        .status(201)
-        .json({
-          data: result,
-          message: "Successfully signed in",
-        });
+      // @ts-ignore
+      session.user = { email: result.email, nickname: result.nickname };
+
+      res.status(201).json({
+        data: result,
+        message: "Successfully signed in",
+      });
+    } catch (e) {
+      next(e);
+    }
+  },
+);
+
+authRouter.post(
+  ROUTES.SIGN_OUT,
+  async (req: Request<{}, {}, SignInRequest>, res: Response, next) => {
+    try {
+      console.log(req.session);
+
+      req.session.destroy((err) => {
+        if (err) {
+          return next(err.message);
+        }
+
+        res.sendStatus(204);
+      });
     } catch (e) {
       next(e);
     }

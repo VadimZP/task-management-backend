@@ -9,14 +9,15 @@ import {
   ResetEmailVerificationCodeRequest,
   SignInRequest,
   UserCreateInputRequest,
-} from "@/types/users.types";
+} from "@/types/auth.types";
 import { CustomError, handleError } from "@/utils";
-import { UsersRepository } from "@/repositories/users.repository";
+import { UsersRepository } from "@/repositories/auth.repository";
+import { EmailService } from "./email.service";
+
+const emailService = new EmailService(nodemailer);
 
 export class UsersService implements IUsersService {
-  private repository: UsersRepository;
-
-  constructor(repository: UsersRepository) {
+  constructor(private repository: UsersRepository) {
     this.repository = repository;
   }
 
@@ -44,18 +45,7 @@ export class UsersService implements IUsersService {
 
       const emailVerificationCode = crypto.randomBytes(3).toString("hex");
 
-      const transporter = nodemailer.createTransport({
-        service: "Gmail",
-        host: "smtp.gmail.com",
-        port: 465,
-        secure: true,
-        auth: {
-          user: "dev634556@gmail.com",
-          pass: "lkgk nuyt lzjc bldx",
-        },
-      });
-
-      await transporter.sendMail({
+      await emailService.sendEmail({
         from: "dev634556@gmail.com",
         to: data.email,
         subject: "Email Confirmation",
@@ -63,7 +53,7 @@ export class UsersService implements IUsersService {
         html: `<b>Verification code: ${emailVerificationCode}</b>`,
       });
 
-      result = await this.repository.create({
+      result = await this.repository.signUp({
         email: data.email,
         nickname: data.nickname,
         password: hash,
@@ -166,18 +156,7 @@ export class UsersService implements IUsersService {
 
     const emailVerificationCode = crypto.randomBytes(3).toString("hex");
 
-    const transporter = nodemailer.createTransport({
-      service: "Gmail",
-      host: "smtp.gmail.com",
-      port: 465,
-      secure: true,
-      auth: {
-        user: "dev634556@gmail.com",
-        pass: "lkgk nuyt lzjc bldx",
-      },
-    });
-
-    await transporter.sendMail({
+    await emailService.sendEmail({
       from: "dev634556@gmail.com",
       to: data.email,
       subject: "Email Confirmation",
@@ -201,9 +180,7 @@ export class UsersService implements IUsersService {
       email: data.email,
     });
 
-    if (
-      foundUser?.email !== data.email
-    ) {
+    if (foundUser?.email !== data.email) {
       throw new CustomError("Incorrect credentials provided", 401);
     }
 

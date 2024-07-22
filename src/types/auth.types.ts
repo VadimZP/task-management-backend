@@ -31,18 +31,12 @@ export type ResetEmailVerificationCodeRepository = Pick<
   "email" | "emailVerificationCode" | "emailVerificationCodeCreatedAt"
 >;
 
-export type SignInRequest = Pick<
-  Prisma.UserCreateInput,
-  "email" | "password"
->;
+export type SignInRequest = Pick<Prisma.UserCreateInput, "email" | "password">;
 
-export type SignInRepository = Pick<
-  Prisma.UserCreateInput,
-  "email"
->;
+export type SignInRepository = Pick<Prisma.UserCreateInput, "email">;
 
 export interface IUsersRepository {
-  create: (data: UserCreateInputRepository) => void;
+  signUp: (data: UserCreateInputRepository) => void;
   findByEmailAndNickname: (data: UserFindByEmailAndNicknameRepository) => void;
   verifyEmail: (data: EmailVerificationRepository) => void;
   resetEmailVerificationCode: (
