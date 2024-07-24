@@ -119,8 +119,6 @@ authRouter.post(
   ROUTES.SIGN_OUT,
   async (req: Request<{}, {}, SignInRequest>, res: Response, next) => {
     try {
-      console.log(req.session);
-
       req.session.destroy((err) => {
         if (err) {
           return next(err.message);
@@ -133,3 +131,12 @@ authRouter.post(
     }
   },
 );
+
+authRouter.get("/session", (req, res) => {
+  // @ts-ignore
+  if (req.session && req.session.user) {
+    res.json({ isAuthenticated: true });
+  } else {
+    res.json({ isAuthenticated: false });
+  }
+});

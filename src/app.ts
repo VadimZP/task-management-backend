@@ -1,5 +1,6 @@
 import express, { Express } from "express";
 import session from "express-session";
+import cors from "cors";
 import { createClient } from "redis";
 import RedisStore from "connect-redis";
 
@@ -7,6 +8,14 @@ import { errorHandlerMiddleware } from "@/middlewares";
 import { authRouter } from "@routes/auth.router";
 
 export const app: Express = express();
+
+app.use(
+  cors({
+    origin: "http://localhost:3000",
+    methods: ["GET", "POST", "PUT", "DELETE"],
+    credentials: true,
+  }),
+);
 
 app.use(express.json());
 
