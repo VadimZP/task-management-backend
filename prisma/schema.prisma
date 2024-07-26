@@ -8,15 +8,138 @@ datasource db {
 }
 
 model User {
-  id        Int      @id @default(autoincrement())
-  email     String   @unique
-  nickname  String   @unique
-  password  String
-  createdAt DateTime @default(now())
-
-  emailVerificationCode String?
+  id                             Int       @id @default(autoincrement())
+  email                          String    @unique
+  nickname                       String    @unique
+  password                       String
+  createdAt                      DateTime  @default(now())
+  emailVerificationCode          String?
   emailVerificationCodeCreatedAt DateTime? @default(now())
-  isActive Boolean @default(false)
+  isActive                       Boolean   @default(false)
+
+  projects Project[]
+
+  Task Task[]
+
+  UsersProjects UsersProjects[]
+
+  UsersTasks UsersTasks[]
+
+  Comment Comment[]
 
   @@map("users")
+}
+
+model Project {
+  id          Int      @id @default(autoincrement())
+  title       String   @db.VarChar(100)
+  description String?  @db.VarChar(300)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  creator   User @relation(fields: [creatorId], references: [id])
+  creatorId Int
+
+  UsersProjects UsersProjects[]
+
+  @@map("projects")
+}
+
+model Task {
+  id          Int      @id @default(autoincrement())
+  title       String   @db.VarChar(200)
+  description String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  creator   User @relation(fields: [creatorId], references: [id])
+  creatorId Int
+
+  priority   TaskPriority @relation(fields: [priorityId], references: [id])
+  priorityId Int
+
+  status   TaskStatus @relation(fields: [statusId], references: [id])
+  statusId Int
+
+  UsersTasks    UsersTasks[]
+  CommentsTasks CommentsTasks[]
+
+  @@map("tasks")
+}
+
+model TaskPriority {
+  id           Int    @id
+  priorityName String
+  Task         Task[]
+
+  @@map("task_priorities")
+}
+
+model TaskStatus {
+  id         Int    @id
+  statusName String
+  Task       Task[]
+
+  @@map("task_statuses")
+}
+
+model UserRole {
+  id        Int    @id
+  rolesName String
+
+  @@map("role_name")
+}
+
+model Comment {
+  id        Int      @id @default(autoincrement())
+  text      String
+  parentId  Int?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  creator   User @relation(fields: [creatorId], references: [id])
+  creatorId Int
+
+  CommentsTasks CommentsTasks[]
+
+  @@map("comments")
+}
+
+model UsersProjects {
+  projectId Int
+  userId    Int
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  project Project @relation(fields: [projectId], references: [id])
+  user    User    @relation(fields: [userId], references: [id])
+
+  @@id([projectId, userId])
+  @@map("users_projects")
+}
+
+model UsersTasks {
+  taskId    Int
+  userId    Int
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  task Task @relation(fields: [taskId], references: [id])
+  user User @relation(fields: [userId], references: [id])
+
+  @@id([taskId, userId])
+  @@map("users_tasks")
+}
+
+model CommentsTasks {
+  taskId    Int
+  commentId Int
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  comment Comment @relation(fields: [commentId], references: [id])
+  task    Task    @relation(fields: [taskId], references: [id])
+
+  @@id([taskId, commentId])
+  @@map("comments_tasks")
 }
