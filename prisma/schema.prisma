@@ -84,10 +84,10 @@ model TaskStatus {
 }
 
 model UserRole {
-  id        Int    @id
-  rolesName String
+  id       Int    @id
+  roleName String
 
-  @@map("role_name")
+  @@map("user_roles")
 }
 
 model Comment {

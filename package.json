@@ -6,7 +6,9 @@
   "scripts": {
     "dev": "ts-node-dev -r tsconfig-paths/register  ./src/server.ts",
     "prettier": "prettier . --write",
-    "test": "jest",
+    "test": "jest"
+  },
+  "prisma": {
     "seed": "ts-node prisma/seed.ts"
   },
   "keywords": [],
