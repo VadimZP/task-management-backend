@@ -12,7 +12,7 @@ export class ProjectsService implements IProjectsService {
       const payload = {
         title: data.title,
         ...(data.description ? { description: data.description } : {}),
-        creator: data.creator,
+        creatorId: data.creatorId,
       };
 
       const newProject = await this.repository.create(payload);

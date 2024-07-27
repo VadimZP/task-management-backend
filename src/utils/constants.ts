@@ -4,4 +4,5 @@ export const ROUTES = {
   RESET_EMAIL_VERIFICATION: "/reset-email-verification",
   SIGN_IN: "/sign-in",
   SIGN_OUT: "/sign-out",
+  PROJECTS: "/projects",
 };

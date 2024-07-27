@@ -6,6 +6,7 @@ import RedisStore from "connect-redis";
 
 import { errorHandlerMiddleware } from "@/middlewares";
 import { authRouter } from "@routes/auth.router";
+import { projectsRouter } from "@routes/projects.router";
 
 export const app: Express = express();
 
@@ -49,5 +50,6 @@ app.get("/", (_req, res) => {
 });
 
 app.use(authRouter);
+app.use(projectsRouter);
 
 app.use(errorHandlerMiddleware);

@@ -2,12 +2,12 @@ import { Prisma } from "@prisma/client";
 import { z } from "zod";
 
 export type ProjectCreateRequest = Pick<
-  Prisma.ProjectCreateInput,
-  "title" | "description" | "creator"
+  Prisma.ProjectUncheckedCreateInput,
+  "title" | "description" | "creatorId"
 >;
 export type ProjectCreateRepository = Pick<
-  Prisma.ProjectCreateInput,
-  "title" | "description" | "creator"
+  Prisma.ProjectUncheckedCreateInput,
+  "title" | "description" | "creatorId"
 >;
 
 export interface IProjectsRepository {
@@ -17,3 +17,11 @@ export interface IProjectsRepository {
 export interface IProjectsService {
   create: (data: ProjectCreateRepository) => void;
 }
+
+export const ProjectCreateSchema = z.object({
+  body: z.object({
+    title: z.string().min(3).max(50),
+    description: z.string().optional(),
+    creatorId: z.number(),
+  }),
+});
