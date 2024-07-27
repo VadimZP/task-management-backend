@@ -1,18 +1,18 @@
 import {
   EmailVerificationRepository,
-  IUsersRepository,
+  IAuthRepository,
   ResetEmailVerificationCodeRepository,
   SignInRepository,
-  UserCreateInputRepository,
+  SignUpRepository,
 } from "@/types/auth.types";
 import { prismaClient } from "@/database";
 
-export class UsersRepository implements IUsersRepository {
+export class AuthRepository implements IAuthRepository {
   constructor(private db: typeof prismaClient) {
     this.db = db;
   }
 
-  async signUp(data: UserCreateInputRepository) {
+  async signUp(data: SignUpRepository) {
     return this.db.user.create({ data });
   }
 

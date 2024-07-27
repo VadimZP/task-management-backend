@@ -5,23 +5,23 @@ import dayjs from "dayjs";
 
 import {
   EmailVerificationRequest,
-  IUsersService,
+  IAuthService,
   ResetEmailVerificationCodeRequest,
   SignInRequest,
-  UserCreateInputRequest,
+  SignUpRequest,
 } from "@/types/auth.types";
 import { CustomError, handleError } from "@/utils";
-import { UsersRepository } from "@/repositories/auth.repository";
+import { AuthRepository } from "@/repositories/auth.repository";
 import { EmailService } from "./email.service";
 
 const emailService = new EmailService(nodemailer);
 
-export class UsersService implements IUsersService {
-  constructor(private repository: UsersRepository) {
+export class AuthService implements IAuthService {
+  constructor(private repository: AuthRepository) {
     this.repository = repository;
   }
 
-  async signUp(data: UserCreateInputRequest) {
+  async signUp(data: SignUpRequest) {
     let result;
 
     try {

@@ -1,11 +1,11 @@
 import { Prisma } from "@prisma/client";
 import { z } from "zod";
 
-export type UserCreateInputRequest = Pick<
+export type SignUpRequest = Pick<
   Prisma.UserCreateInput,
   "email" | "nickname" | "password"
 >;
-export type UserCreateInputRepository = Omit<
+export type SignUpRepository = Omit<
   Prisma.UserCreateInput,
   "createdAt" | "emailVerificationCodeCreatedAt"
 >;
@@ -35,8 +35,8 @@ export type SignInRequest = Pick<Prisma.UserCreateInput, "email" | "password">;
 
 export type SignInRepository = Pick<Prisma.UserCreateInput, "email">;
 
-export interface IUsersRepository {
-  signUp: (data: UserCreateInputRepository) => void;
+export interface IAuthRepository {
+  signUp: (data: SignUpRepository) => void;
   findByEmailAndNickname: (data: UserFindByEmailAndNicknameRepository) => void;
   verifyEmail: (data: EmailVerificationRepository) => void;
   resetEmailVerificationCode: (
@@ -45,8 +45,8 @@ export interface IUsersRepository {
   signIn: (data: SignInRepository) => void;
 }
 
-export interface IUsersService {
-  signUp: (data: UserCreateInputRequest) => void;
+export interface IAuthService {
+  signUp: (data: SignUpRequest) => void;
   verifyEmail: (data: EmailVerificationRequest) => void;
   resetEmailVerificationCode: (data: ResetEmailVerificationCodeRequest) => void;
   signIn: (data: SignInRequest) => void;

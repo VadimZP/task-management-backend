@@ -1,11 +1,11 @@
 import express, { Request, Response } from "express";
 
-import { UsersService } from "@/services/auth.service";
-import { UsersRepository } from "@/repositories/auth.repository";
+import { AuthService } from "@/services/auth.service";
+import { AuthRepository } from "@/repositories/auth.repository";
 import { prismaClient } from "@/database";
 import { ROUTES } from "@/utils/constants";
 import {
-  UserCreateInputRequest,
+  SignUpRequest,
   SignUpSchema,
   EmailVerificationRequest,
   EmailVerificationSchema,
@@ -17,15 +17,15 @@ import { validate } from "@/middlewares";
 
 export const authRouter = express.Router();
 
-const usersRepository = new UsersRepository(prismaClient);
-const usersService = new UsersService(usersRepository);
+const authRepository = new AuthRepository(prismaClient);
+const authService = new AuthService(authRepository);
 
 authRouter.post(
   ROUTES.SIGN_UP,
   validate(SignUpSchema),
-  async (req: Request<{}, {}, UserCreateInputRequest>, res: Response, next) => {
+  async (req: Request<{}, {}, SignUpRequest>, res: Response, next) => {
     try {
-      const result = await usersService.signUp({
+      const result = await authService.signUp({
         email: req.body.email,
         nickname: req.body.nickname,
         password: req.body.password,
@@ -49,7 +49,7 @@ authRouter.patch(
     next,
   ) => {
     try {
-      const result = await usersService.verifyEmail({
+      const result = await authService.verifyEmail({
         email: req.body.email,
         nickname: req.body.nickname,
         password: req.body.password,
@@ -74,7 +74,7 @@ authRouter.patch(
     next,
   ) => {
     try {
-      const result = await usersService.resetEmailVerificationCode({
+      const result = await authService.resetEmailVerificationCode({
         email: req.body.email,
         nickname: req.body.nickname,
         password: req.body.password,
@@ -95,7 +95,7 @@ authRouter.post(
   validate(SignInSchema),
   async (req: Request<{}, {}, SignInRequest>, res: Response, next) => {
     try {
-      const result = await usersService.signIn({
+      const result = await authService.signIn({
         email: req.body.email,
         password: req.body.password,
       });
