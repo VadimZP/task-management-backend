@@ -5,4 +5,5 @@ export const ROUTES = {
   SIGN_IN: "/sign-in",
   SIGN_OUT: "/sign-out",
   PROJECTS: "/projects",
+  PROJECTS_SLUG: "/projects/:slug",
 };

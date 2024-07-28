@@ -4,7 +4,7 @@ import cors from "cors";
 import { createClient } from "redis";
 import RedisStore from "connect-redis";
 
-import { errorHandlerMiddleware } from "@/middlewares";
+import { handleErrorGlobally } from "@/middlewares";
 import { authRouter } from "@routes/auth.router";
 import { projectsRouter } from "@routes/projects.router";
 
@@ -52,4 +52,4 @@ app.get("/", (_req, res) => {
 app.use(authRouter);
 app.use(projectsRouter);
 
-app.use(errorHandlerMiddleware);
+app.use(handleErrorGlobally);

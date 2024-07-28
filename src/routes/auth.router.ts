@@ -103,7 +103,12 @@ authRouter.post(
       const session = req.session;
 
       // @ts-ignore
-      session.user = { email: result.email, nickname: result.nickname };
+      session.user = {
+        id: result.id,
+        email: result.email,
+        nickname: result.nickname,
+        isActive: result.isActive,
+      };
 
       res.status(201).json({
         data: result,
