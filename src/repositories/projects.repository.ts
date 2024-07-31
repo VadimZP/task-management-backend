@@ -4,6 +4,7 @@ import {
   FindByCreatorIdRepository,
   IProjectsRepository,
   ProjectCreateRepository,
+  ProjectUpdateRepository,
 } from "@/types/projects.types";
 
 export class ProjectsRepository implements IProjectsRepository {
@@ -29,6 +30,18 @@ export class ProjectsRepository implements IProjectsRepository {
         creatorId: data.creatorId,
         slug: data.slug,
       },
+    });
+  }
+
+  async update(data: ProjectUpdateRepository) {
+    const { id, creatorId, ...rest } = data;
+
+    return this.db.project.update({
+      where: {
+        id: data.id,
+        creatorId: data.creatorId,
+      },
+      data: rest,
     });
   }
 }

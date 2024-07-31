@@ -7,9 +7,10 @@ import { protect, validate } from "@/middlewares";
 import { ProjectsRepository } from "@/repositories/projects.repository";
 import { ProjectsService } from "@/services/projects.service";
 import {
-  FindByCreatorIdSchema,
   ProjectCreateRequest,
   ProjectCreateSchema,
+  ProjectUpdateRequest,
+  ProjectUpdateSchema,
   findByCreatorIdAndSlugSchema,
 } from "@/types/projects.types";
 
@@ -76,6 +77,34 @@ projectsRouter.get(
         creatorId,
         slug: req.params.slug,
       });
+
+      res.status(200).json({ data: result });
+    } catch (e) {
+      next(e);
+    }
+  },
+);
+
+projectsRouter.patch(
+  ROUTES.PROJECTS,
+  validate(ProjectUpdateSchema),
+  async (
+    req: Request<{}, {}, ProjectUpdateRequest>,
+    res: Response,
+    next: NextFunction,
+  ) => {
+    try {
+      // @ts-ignore
+      const creatorId = req.session.user.id;
+
+      const payload = {
+        id: req.body.id,
+        ...(req.body.title ? { title: req.body.title } : {}),
+        ...(req.body.description ? { description: req.body.description } : {}),
+        creatorId: creatorId,
+      };
+
+      const result = await projectsService.update(payload);
 
       res.status(200).json({ data: result });
     } catch (e) {

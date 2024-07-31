@@ -137,7 +137,7 @@ authRouter.post(
   },
 );
 
-authRouter.get("/session", (req, res) => {
+authRouter.get(ROUTES.SESSION, (req, res) => {
   // @ts-ignore
   if (req.session && req.session.user) {
     res.json({ isAuthenticated: true });

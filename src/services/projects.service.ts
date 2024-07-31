@@ -6,8 +6,9 @@ import {
   FindByCreatorIdRequest,
   IProjectsService,
   ProjectCreateRequest,
+  ProjectUpdateRequest,
 } from "@/types/projects.types";
-import { handleError } from "@/utils";
+import { generateSlug, handleError } from "@/utils";
 
 export class ProjectsService implements IProjectsService {
   constructor(private repository: ProjectsRepository) {
@@ -16,12 +17,7 @@ export class ProjectsService implements IProjectsService {
 
   async create(data: ProjectCreateRequest) {
     try {
-      const slug = slugify(data.title, {
-        replacement: "-",
-        lower: true,
-        strict: false,
-        trim: true,
-      });
+      const slug = generateSlug(data.title);
 
       const payload = {
         title: data.title,
@@ -50,9 +46,29 @@ export class ProjectsService implements IProjectsService {
 
   async findByCreatorIdAndSlug(data: FindByCreatorIdAndSlugRequest) {
     try {
-      const ownProjects = await this.repository.findByCreatorId(data);
+      const project = await this.repository.findByCreatorIdAndSlug(data);
 
-      return ownProjects;
+      return project;
+    } catch (e) {
+      handleError(e);
+    }
+  }
+
+  async update(data: ProjectUpdateRequest) {
+    try {
+      const slug = data.title ? generateSlug(data.title) : undefined;
+
+      const payload = {
+        id: data.id,
+        ...(data.title ? { title: data.title } : {}),
+        ...(data.description ? { description: data.description } : {}),
+        ...(slug ? { slug } : {}),
+        creatorId: data.creatorId,
+      };
+
+      const updatedProject = await this.repository.update(payload);
+
+      return updatedProject;
     } catch (e) {
       handleError(e);
     }
